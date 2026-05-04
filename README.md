@@ -1,98 +1,158 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# CodeSync 🚀
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A **real-time collaborative code editor** backend built with NestJS — enabling multiple developers to write, edit, and sync code simultaneously in shared sessions, with background job processing and WebSocket-based live communication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## ✨ Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 🔐 **JWT Authentication** — Secure signup/login with token-based auth and role-based access control
+- 📧 **OTP Password Reset** — Email-based OTP flow via Nodemailer for secure password recovery
+- 🔴 **Real-Time Collaboration** — WebSocket gateway (Socket.IO) for live code sync across all users in a session
+- 🏠 **Room/Session Management** — Users can create and join isolated coding rooms; changes broadcast only to room members
+- ⚙️ **Background Job Processing** — Bull Queue + Redis for async task handling (e.g. notifications, cleanup jobs)
+- 💾 **Persistent Storage** — MongoDB via Mongoose for storing users, sessions, and code snapshots
+- 🔄 **Redis Integration** — Used for both Bull Queue transport and fast in-memory caching
 
-## Project setup
+---
 
-```bash
-$ pnpm install
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | NestJS (TypeScript) |
+| Real-Time | Socket.IO + WebSocket Gateway |
+| Queue | Bull Queue |
+| Cache / Broker | Redis (`@nestjs-modules/ioredis`) |
+| Database | MongoDB + Mongoose |
+| Auth | JWT + Passport.js |
+| Email | Nodemailer |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── auth/           # JWT auth, guards, OTP reset
+├── users/          # User module & schema
+├── rooms/          # Session/room management
+├── gateway/        # Socket.IO WebSocket gateway
+├── queue/          # Bull Queue jobs & processors
+└── common/         # Decorators, filters, interceptors
 ```
 
-## Compile and run the project
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js v18+
+- MongoDB (local or Atlas)
+- Redis (local or Docker)
+
+### Installation
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+git clone https://github.com/AmrOsama10/codesync.git
+cd codesync
+npm install
 ```
 
-## Run tests
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# App
+PORT=3000
+
+# Database
+MONGO_URI=mongodb://localhost:27017/codesync
+
+# Auth
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=7d
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Email (Nodemailer)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=your_email@gmail.com
+MAIL_PASS=your_app_password
+```
+
+### Run the App
 
 ```bash
-# unit tests
-$ pnpm run test
+# Development
+npm run start:dev
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Production
+npm run build
+npm run start:prod
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 🔌 WebSocket Events
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Event | Direction | Description |
+|---|---|---|
+| `join-room` | Client → Server | Join a coding session by room ID |
+| `leave-room` | Client → Server | Leave the current session |
+| `code-change` | Client → Server | Send a code update |
+| `code-update` | Server → Client | Broadcast code change to room members |
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+---
+
+## 🔐 API Endpoints
+
+### Auth
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/auth/register` | Register a new user |
+| POST | `/auth/login` | Login and receive JWT |
+| POST | `/auth/forgot-password` | Request OTP via email |
+| POST | `/auth/reset-password` | Reset password with OTP |
+
+### Rooms
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/rooms` | Create a new coding room |
+| GET | `/rooms/:id` | Get room details |
+| DELETE | `/rooms/:id` | Delete a room (owner only) |
+
+---
+
+## 🧠 Architecture Overview
+
+```
+Client A ──┐
+           ├──► Socket.IO Gateway ──► Room Manager ──► Broadcast to all clients in room
+Client B ──┘         │
+                      │
+                 Bull Queue ──► Redis ──► Background Processors
+                      │
+                   MongoDB ──► Persistent sessions & user data
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 📌 Key Technical Decisions
 
-Check out a few resources that may come in handy when working with NestJS:
+- **NestJS Modules** — Each feature is fully encapsulated (Auth, Rooms, Queue, Gateway) for clean separation of concerns
+- **Bull Queue over direct processing** — Offloads heavy/async tasks to background workers, keeping WebSocket responses fast
+- **Redis dual role** — Acts as both the Bull Queue transport broker and an in-memory store for active session data
+- **Guard-based Auth on WebSocket** — Custom AuthGuard extracts and validates JWT from WebSocket handshake headers
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 👨‍💻 Author
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Amr Osama** — Backend Developer  
+[GitHub](https://github.com/AmrOsama10) · 
