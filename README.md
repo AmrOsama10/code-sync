@@ -108,24 +108,6 @@ npm run start:prod
 | `code-change` | Client → Server | Send a code update |
 | `code-update` | Server → Client | Broadcast code change to room members |
 
----
-
-## 🔐 API Endpoints
-
-### Auth
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/auth/register` | Register a new user |
-| POST | `/auth/login` | Login and receive JWT |
-| POST | `/auth/forgot-password` | Request OTP via email |
-| POST | `/auth/reset-password` | Reset password with OTP |
-
-### Rooms
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/rooms` | Create a new coding room |
-| GET | `/rooms/:id` | Get room details |
-| DELETE | `/rooms/:id` | Delete a room (owner only) |
 
 ---
 
